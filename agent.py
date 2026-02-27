@@ -13,8 +13,9 @@ def run_research_agent():
     loader = ArxivLoader(query="Artificial Intelligence", load_max_docs=3)
     docs = loader.load()
     
-    # 2. Setup Gemini 3 Flash (Free Tier)
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
+    # 2. Setup Gemini 3/2.5 Flash (Free Tier)
+    # 'gemini-2.5-flash' is the stable fast model for 2026
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
     
     # 3. Summarization Chain
     template = "You are a top-tier AI researcher. Summarize these groundbreaking papers for a daily newsletter: {context}"
