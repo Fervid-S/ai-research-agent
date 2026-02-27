@@ -6,12 +6,19 @@ from langchain_core.output_parsers import StrOutputParser
 import resend
 from dotenv import load_dotenv
 
+# Load variables from .env file for local testing
 load_dotenv()
 
 def run_research_agent():
-    # ... (Keep your loader and model setup the same)
-
-    # 1. UPDATED PROMPT: Ask for HTML formatting
+    # 1. Setup Data Loader (Limited to 10k chars to prevent memory crashes)
+    loader = ArxivLoader(query="Artificial Intelligence", load_max_docs=3, doc_content_chars_max=10000)
+    docs = loader.load()
+    
+    # 2. Setup Gemini Model
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY")
+    )
+    
+    # 3. Define the Prompt with HTML instructions
     template = """
     You are a top-tier AI researcher writing a daily newsletter.
     Summarize the following papers using clean HTML formatting.
@@ -26,28 +33,30 @@ def run_research_agent():
     prompt = ChatPromptTemplate.from_template(template)
     chain = prompt | llm | StrOutputParser()
     
-    # 2. Generate the Digest
+    # 4. Generate the Digest
     newsletter_content = chain.invoke({"context": docs})
     
-    # 3. Email via Resend (Wrap it in a container for better looks)
+    # 5. Email via Resend
     resend.api_key = os.getenv("RESEND_API_KEY")
     
-    # We wrap the content in a <div> with a specific font for professional looks
+    # Wrap in a styled container for a professional look
     html_body = f"""
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto;">
         {newsletter_content}
-        <footer style="margin-top: 20px; font-size: 0.8em; color: #777;">
-            Sent by your Autonomous AI Agent | <a href="https://github.com/YOUR_USERNAME">View on GitHub</a>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <footer style="font-size: 0.8em; color: #777;">
+            Sent by your Autonomous AI Agent | <a href="https://github.com/Fervid-S">View on GitHub</a>
         </footer>
     </div>
     """
 
     resend.Emails.send({
         "from": "onboarding@resend.dev",
-        "to": "your-email@example.com",
+        "to": "sidhant.singh.ml@gmail.com", # REPLACE WITH YOUR EMAIL
         "subject": "🚀 Daily Groundbreaking AI Update",
-        "html": html_body  # Now using our styled html_body
+        "html": html_body
     })
+    print("Email sent successfully!")
 
 if __name__ == "__main__":
     run_research_agent()
