@@ -9,29 +9,44 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def run_research_agent():
-    # 1. Fetch Latest AI Papers (Max 3)
-    loader = ArxivLoader(query="Artificial Intelligence", load_max_docs=3)
-    docs = loader.load()
+    # ... (Keep your loader and model setup the same)
+
+    # 1. UPDATED PROMPT: Ask for HTML formatting
+    template = """
+    You are a top-tier AI researcher writing a daily newsletter.
+    Summarize the following papers using clean HTML formatting.
     
-    # 2. Setup Gemini 3/2.5 Flash (Free Tier)
-    # 'gemini-2.5-flash' is the stable fast model for 2026
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
+    Use <h2> for the main title, <h3> for paper titles, <b> for emphasis, 
+    and <br><br> for clear spacing between paragraphs.
+    Ensure there is a horizontal line <hr> between each paper summary.
+
+    Papers: {context}
+    """
     
-    # 3. Summarization Chain
-    template = "You are a top-tier AI researcher. Summarize these groundbreaking papers for a daily newsletter: {context}"
     prompt = ChatPromptTemplate.from_template(template)
     chain = prompt | llm | StrOutputParser()
     
-    # 4. Generate the Content to be delivered
+    # 2. Generate the Digest
     newsletter_content = chain.invoke({"context": docs})
     
-    # 5. Send to Email via Resend
+    # 3. Email via Resend (Wrap it in a container for better looks)
     resend.api_key = os.getenv("RESEND_API_KEY")
+    
+    # We wrap the content in a <div> with a specific font for professional looks
+    html_body = f"""
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto;">
+        {newsletter_content}
+        <footer style="margin-top: 20px; font-size: 0.8em; color: #777;">
+            Sent by your Autonomous AI Agent | <a href="https://github.com/YOUR_USERNAME">View on GitHub</a>
+        </footer>
+    </div>
+    """
+
     resend.Emails.send({
         "from": "onboarding@resend.dev",
-        "to": "sidhant.singh.ml@gmail.com",
+        "to": "your-email@example.com",
         "subject": "🚀 Daily Groundbreaking AI Update",
-        "html": f"<h2>Today's AI Research Highlights</h2><p>{newsletter_content}</p>"
+        "html": html_body  # Now using our styled html_body
     })
 
 if __name__ == "__main__":
