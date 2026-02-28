@@ -104,6 +104,19 @@ To run this project locally, follow these steps:
 
 The agent is configured to run automatically every day at 08:00 UTC via the ".github/workflows/daily\_run.yml" configuration. Status reports can be viewed under the Actions tab.
 
+
+## 🛠️ Engineering Challenges & Resolutions
+
+### 1. Data Freshness (The "Stale Paper" Problem)
+**Issue:** Initial runs returned the same three arXiv papers regardless of the execution time.
+**Root Cause:** The arXiv API defaults to sorting by *relevance* rather than *recency*.
+**Resolution:** Re-configured the `arxiv.Search` object to use `SortCriterion.SubmittedDate` with a `Descending` sort order. This ensures that every 12-hour cycle fetches the most recently published research.
+
+### 2. API Robustness (News Ingestion)
+**Issue:** The agent occasionally failed to fetch tech news, returning empty results.
+**Root Cause:** Overly restrictive API queries (specific categories + short time windows) in the NewsData.io free tier.
+**Resolution:** Implemented a broader query logic with exception handling. If a specific "AI" search returns zero results, the agent falls back to a general "Technology" crawl to ensure the user always receives a briefing.
+
 graph LR
     A[Clock: GitHub Actions] --> B(Agent: Python/LangChain)
     B --> C{Sourcing}
