@@ -100,3 +100,12 @@ To run this project locally, follow these steps:
 
 The agent is configured to run automatically every day at 08:00 UTC via the ".github/workflows/daily\_run.yml" configuration. Status reports can be viewed under the Actions tab.
 
+graph LR
+    A[Clock: GitHub Actions] --> B(Agent: Python/LangChain)
+    B --> C{Sourcing}
+    C --> D[arXiv API]
+    C --> E[NewsData.io]
+    D --> F[Gemini 3 Flash]
+    E --> F
+    F --> G[Summarization Engine]
+    G --> H[Email: Resend/SMTP]
