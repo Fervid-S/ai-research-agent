@@ -78,7 +78,7 @@ if __name__ == "__main__":
     os.environ["RESEND_API_KEY"] = os.getenv("RESEND_API_KEY")
     res = Emails.send({
         "from": "onboarding@resend.dev",
-        "to": "your-email@example.com",
+        "to": "sidhant.singh.ml@gmail.com",
         "subject": "Your Daily AI Research Update",
         "html": styled_email
     })
