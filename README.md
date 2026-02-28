@@ -8,6 +8,10 @@
 
 This project is an automated research assistant designed to solve the problem of information overload in the Artificial Intelligence field. It programmatically monitors academic pre-print servers and tech news, processes the content using Large Language Models (LLMs), and delivers a structured digest to a specified email address.
 
+<div align="center">
+  <img src="assets/system_architecture.png" alt="AI Agent Architecture" width="800">
+  <p><i>The System Architecture: Data flows from APIs through LangChain to a daily email digest.</i></p>
+</div>
 
 
 \## Technical Architecture
